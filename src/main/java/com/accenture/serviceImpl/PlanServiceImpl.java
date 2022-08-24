@@ -13,23 +13,23 @@ import com.accenture.service.PlanService;
 public class PlanServiceImpl implements PlanService {
 	
 	@Autowired
-	private PlanRepo planMasterRepo;
+	private PlanRepo planRepo;
 
 	@Override
 	public boolean savePlan(Plan plan) {
-		Plan saved = planMasterRepo.save(plan);
+		Plan saved = planRepo.save(plan);
 		return saved.getPlanId()!= null;
 	}
 
 	@Override
 	public List<Plan> getAllPlans() {
-		List<Plan> Plans = planMasterRepo.findAll();
+		List<Plan> Plans = planRepo.findAll();
 		return Plans;
 	}
 
 	@Override
 	public Plan getPlanById(Integer Id) {
-		Optional<Plan> findById = planMasterRepo.findById(Id);
+		Optional<Plan> findById = planRepo.findById(Id);
 		if(findById.isPresent())
 		{
 			return findById.get();
@@ -39,7 +39,7 @@ public class PlanServiceImpl implements PlanService {
 
 	@Override
 	public boolean updatePlan(Plan plan) {
-		Plan save = planMasterRepo.save(plan);
+		Plan save = planRepo.save(plan);
 		return save.getPlanId()!=null;
 	}
 
@@ -47,7 +47,7 @@ public class PlanServiceImpl implements PlanService {
 	public boolean deletePlanById(Integer Id) {
 		boolean status=false;
 		try {
-		planMasterRepo.deleteById(Id);
+		planRepo.deleteById(Id);
 		status=true;
 		}
 		catch(Exception e)
@@ -59,7 +59,7 @@ public class PlanServiceImpl implements PlanService {
 
 	@Override
 	public boolean planStatusChange(Integer planId, String status) {
-		Optional<Plan> findById = planMasterRepo.findById(planId);
+		Optional<Plan> findById = planRepo.findById(planId);
 		if(findById.isPresent())
 		{
 			Plan plan = findById.get();
@@ -72,7 +72,7 @@ public class PlanServiceImpl implements PlanService {
 				status="y";
 			}
 			plan.setActiveSw(status);
-			planMasterRepo.save(plan);
+			planRepo.save(plan);
 			return true;
 		}
 		return false;

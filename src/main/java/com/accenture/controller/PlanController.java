@@ -1,7 +1,9 @@
 package com.accenture.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.catalina.authenticator.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,29 +15,39 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.accenture.constants.AppConstants;
 import com.accenture.entity.Plan;
+import com.accenture.props.AppProperties;
 import com.accenture.service.PlanService;
 
 @RestController
 public class PlanController {
     
-	@Autowired
-	private PlanService planMasterService;
+	private PlanService planService;
+	
+	private Map<String, String> message;
+	
+	public PlanController(PlanService planServive,AppProperties appProp) 
+	{
+		this.planService = planServive;
+		this.message = appProp.getMessages();
+		
+	}
 	
 	@PostMapping(value="/save")
 	public ResponseEntity<String> save(@RequestBody Plan plan){
 		
-		String responsemsg="";
+		String responsemsg=AppConstants.EMPTY_STR;
 		
-		boolean savePlan = planMasterService.savePlan(plan);
+		boolean savePlan = planService.savePlan(plan);
 		
 		if(savePlan)
 		{
-			responsemsg="Record Saved";
+			responsemsg=message.get(AppConstants.PLAN_SAVE_SUCC);
 		}
 		else
 		{
-			responsemsg="Sorry Not Able to Store Data";
+			responsemsg=message.get(AppConstants.PLAN_SAVE_FAIL);
 		}
 		return new ResponseEntity<>(responsemsg,HttpStatus.CREATED);
 	}
@@ -44,21 +56,21 @@ public class PlanController {
 	@GetMapping(value="/alldetails")
 	public ResponseEntity<List<Plan>> getAllDetails()
 	{
-		List<Plan> allPlans = planMasterService.getAllPlans();
+		List<Plan> allPlans = planService.getAllPlans();
 		return new ResponseEntity<>(allPlans,HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/details/{id}")
 	public ResponseEntity<Plan> getDetailsById(@PathVariable("id") Integer Id)
 	{
-		Plan planById = planMasterService.getPlanById(Id);
+		Plan planById = planService.getPlanById(Id);
 		return new ResponseEntity<>(planById,HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/edit/{id}")
 	public ResponseEntity<Plan> edit(@PathVariable("id") Integer Id)
 	{
-		Plan planById = planMasterService.getPlanById(Id);
+		Plan planById = planService.getPlanById(Id);
 		return new ResponseEntity<>(planById,HttpStatus.OK);
 	}
 	
@@ -66,14 +78,14 @@ public class PlanController {
 	public ResponseEntity<String> update(@RequestBody Plan plan)
 	{
 		String responsemsg="";
-		boolean savePlan = planMasterService.savePlan(plan);
+		boolean savePlan = planService.savePlan(plan);
 		if(savePlan)
 		{
-			responsemsg="Record Updated";
+			responsemsg=message.get(AppConstants.PLAN_UPDATE_SUCC);
 		}
 		else
 		{
-			responsemsg="Unable to Update Record";
+			responsemsg=message.get(AppConstants.PLAN_UPDATE_FAIL);
 		}
 		return new ResponseEntity<>(responsemsg,HttpStatus.OK);
 	}
@@ -83,14 +95,14 @@ public class PlanController {
 	public ResponseEntity<String> deleteById(@PathVariable("id") Integer Id)
 	{
 		String responemsg="";
-		boolean deletePlanById = planMasterService.deletePlanById(Id);
+		boolean deletePlanById = planService.deletePlanById(Id);
 		if(deletePlanById)
 		{
-			responemsg="Record Deleted";
+			responemsg=message.get(AppConstants.PLAN_DELETE_SUCC);
 		}
 		else
 		{
-			responemsg="Unable to Delete the record";
+			responemsg=message.get(AppConstants.PLAN_DELETE_FAIL);
 		}
 		return new ResponseEntity<>(responemsg,HttpStatus.OK);	
 	}
@@ -99,14 +111,14 @@ public class PlanController {
 	public ResponseEntity<String> statusChange(@PathVariable("id") Integer Id,@PathVariable("status") String status)
 	{
 		String responsemsg="";
-		boolean planStatusChange = planMasterService.planStatusChange(Id, status);
+		boolean planStatusChange = planService.planStatusChange(Id, status);
 		if(planStatusChange)
 		{
-			responsemsg="Record Updated";
+			responsemsg=message.get(AppConstants.PLAN_STATUS_SUCC);
 		}
 		else
 		{
-			responsemsg="Unable to Update Record";
+			responsemsg=message.get(AppConstants.PLAN_STATUS_FAIL);
 		}
 		return new ResponseEntity<>(responsemsg,HttpStatus.OK);
 	}
